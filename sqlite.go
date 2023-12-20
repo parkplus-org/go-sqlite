@@ -264,7 +264,11 @@ func (r *rows) Next(dest []driver.Value) error {
 
 				switch r.ColumnTypeDatabaseTypeName(i) {
 				case "DATE", "DATETIME", "TIMESTAMP":
-					dest[i], _ = r.c.parseTime(v)
+					var ok bool
+					dest[i], ok = r.c.parseTime(v)
+					if !ok {
+						dest[i] = time.Time{}
+					}
 				default:
 					dest[i] = v
 				}
