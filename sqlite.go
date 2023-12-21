@@ -297,6 +297,17 @@ func (r *rows) Next(dest []driver.Value) error {
 //
 // These time.Parse formats handle formats 1 through 7 listed at https://www.sqlite.org/lang_datefunc.html.
 var parseTimeFormats = []string{
+	"2006-01-02 15:04:05.999999999 -0700", // created_at, updated
+	"2006-01-02 15:04:05 -0700",           // tag_expiry, led_msg_expiry
+
+	"2006-01-02T15:04:05.999999999 -0700",
+	"2006-01-02T15:04:05.999999999 -07:00",
+	"2006-01-02T15:04:05 -0700",
+	"2006-01-02T15:04:05 -07:00",
+
+	"2006-01-02 15:04:05.999999999 -07:00",
+	"2006-01-02 15:04:05 -07:00",
+
 	"2006-01-02 15:04:05.999999999-07:00",
 	"2006-01-02T15:04:05.999999999-07:00",
 	"2006-01-02 15:04:05.999999999",
@@ -318,7 +329,7 @@ func (c *conn) parseTime(s string) (interface{}, bool) {
 	ts := strings.TrimSuffix(s, "Z")
 
 	for _, f := range parseTimeFormats {
-		t, err := time.ParseInLocation(f, ts, time.UTC)
+		t, err := time.ParseInLocation(f, ts, time.Local)
 		if err == nil {
 			return t, true
 		}
